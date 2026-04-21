@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUSS.IO - Уулзалт Товлох Интерактив Скрипт</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-card:hover { transform: translateY(-2px); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 selection:bg-blue-100">
+    <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+        <!-- Header -->
+        <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></span>
+                    <span class="text-xs font-bold text-blue-600 uppercase tracking-widest">Шууд Дуудлага</span>
+                </div>
+                <h1 class="text-5xl font-black text-slate-900 tracking-tighter italic">TUSS.IO</h1>
+                <p class="text-slate-500 mt-1 uppercase text-[10px] font-bold tracking-[0.3em]">Борлуулалтын ухаалаг туслах</p>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="restartCall()" class="bg-white px-5 py-2.5 rounded-2xl shadow-sm border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    ДАХИН ЭХЛЭХ
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Display Card -->
+        <main class="bg-white rounded-[2.5rem] shadow-2xl shadow-blue-900/5 border border-slate-200 overflow-hidden flex flex-col min-h-[340px] mb-8 relative transition-all duration-500">
+            <!-- Dynamic Status Bar -->
+            <div id="status-color" class="h-2 w-full bg-blue-500 transition-colors duration-700"></div>
+            
+            <div class="p-8 md:p-14">
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block">Таны унших текст</span>
+                            <span id="step-indicator" class="text-xs font-bold text-blue-600">Алхам 1</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="copyContent()" class="p-3 rounded-xl hover:bg-slate-50 text-slate-400 hover:text-blue-600 transition-all active:scale-90" title="Текстийг хуулах">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                </div>
+
+                <div id="script-container" class="fade-in">
+                    <p id="caller-text" class="text-2xl md:text-3xl text-slate-800 leading-[1.3] font-bold tracking-tight">
+                        Түр хүлээнэ үү...
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Interactive Options Grid -->
+        <section class="mb-12">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="h-[1px] flex-grow bg-slate-200"></div>
+                <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] whitespace-nowrap">Харилцагч юу гэж хариулсан бэ?</h3>
+                <div class="h-[1px] flex-grow bg-slate-200"></div>
+            </div>
+            
+            <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- JavaScript handles button injection -->
+            </div>
+        </section>
+
+        <!-- Footer Info & Controls -->
+        <footer class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 flex flex-col items-center justify-center text-center shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Эцсийн зорилго</p>
+                <p class="text-sm font-black text-slate-700 italic">Уулзалт товлох</p>
+            </div>
+            
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 flex flex-col items-center justify-center text-center shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Ярианы төлөв</p>
+                <div class="flex items-center gap-2">
+                    <p id="call-status" class="text-sm font-black text-slate-700 uppercase">Идэвхтэй</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-center">
+                <button onclick="goBack()" id="back-btn" class="group flex items-center gap-2 text-[10px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest disabled:opacity-0 transition-all duration-300 py-3 px-6 rounded-2xl hover:bg-blue-50">
+                    <svg class="transition-transform group-hover:-translate-x-1" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Өмнөх алхам
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl opacity-0 scale-95 transition-all pointer-events-none font-bold text-sm z-50 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-green-400"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Текст хуулагдлаа!
+    </div>
+
+    <script>
+        const dialogue = {
+            'start': {
+                step: 1,
+                text: "Сайн байна уу, TUSS.IO-оос ярьж байна. Та манай комдлайнс менежментийн  платформ болох TUSS.IO - ын талаарх мэдээлэл авах хүсэлт ирүүлсэн байна. Танд энэ талаар дэлгэрэнгүй мэдээлэл өгөхөд тохиромжтой цаг мөн үү?",
+                color: "#3b82f6",
+                options: [
+                    { label: "Тийм ээ, сонсож байна.", next: 'intro_value' },
+                    { label: "Танайх яг юу хийдэг вэ?", next: 'detailed_info' },
+                    { label: "Одоо завгүй байна.", next: 'busy_offer_mail' }
+                ]
+            },
+            'detailed_info': {
+                step: 2,
+                text: "Бид байгууллагын системчлэлийн платформыг хөгжүүлэгч юм. Бид стратегийн төлөвлөлт, гүйцэтгэлийн удирдлага, дотоод аудит болон ISO стандартыг датанд суурилан автоматжуулдаг. Энгийнээр хэлбэл, удирдлагын шийдвэр гаргалтыг бодит шинжилгээнд үндэслэхэд тусалдаг.",
+                color: "#6366f1",
+                options: [
+                    { label: "Ойлгомжтой, цаашаа ярья.", next: 'intro_value' },
+                    { label: "Зөвхөн мэйлээр мэдээлэл авъя.", next: 'end_only_mail' }
+                ]
+            },
+            'intro_value': {
+                step: 3,
+                text: "Бид танай байгууллагын үйл ажиллагааны онцлогт тохирсон шийдлийг гаргахын тулд богино хэмжээний уулзалт (15-20 минут) хийвэл илүү үр дүнтэй байдаг юм. Хэзээ уулзах боломжтой вэ?",
+                color: "#8b5cf6",
+                options: [
+                    { label: "За, уулзалт товлоё.", next: 'confirm_meeting' },
+                    { label: "Уулзахгүй, зөвхөн демо авъя.", next: 'why_meeting' },
+                    { label: "Уулзалт хэрэггүй, мэдээлэл авъя.", next: 'end_only_mail' }
+                ]
+            },
+            'why_meeting': {
+                step: 4,
+                text: "Ойлголоо. Гэхдээ демо ашиглахаас өмнө та өөрийн сайн мэдэхгүй программаа шууд ашиглах гэж байгаа учраас бид заавар зөвлөгөө өгөх нь илүү үр дүнтэй байх болов уу гэж бодож байна. Та ямар ч байсан нэг уулзаад үзэх үү?",
+                color: "#f59e0b",
+                options: [
+                    { label: "За за, тэгвэл уулзая.", next: 'confirm_meeting' },
+                    { label: "Үгүй ээ, зөвхөн демог нь авъя.", next: 'direct_demo_open' }
+                ]
+            },
+            'confirm_meeting': {
+                step: 5,
+                text: "Уулзалт товлосондоо баяртай байна. Би таны мэйл рүү уулзалтын урилга болон программыг ашиглахад хэрэгтэй видео заавар бүхий хөтөчийг урьдчилж илгээлээ. Уулзалтаар илүү дэлгэрэнгүй ярилцъя. Баяртай.",
+                color: "#10b981",
+                isEnd: true,
+                options: []
+            },
+            'direct_demo_open': {
+                step: 5,
+                text: "За тэгвэл би танд зориулж демо хувилбарыг нь нээж өгье. Мөн танд программ ашиглахад хэрэгтэй видео заавар бүхий хөтөчийг мэйлээр илгээлээ. Демог бүрэн нээхэд шаардлагатай зарим мэдээллийг мэйлээр лавлаж асуух тул та зав чөлөөгөөрөө хариу өгөөрэй. Баяртай.",
+                color: "#10b981",
+                isEnd: true,
+                options: []
+            },
+            'busy_offer_mail': {
+                step: 2,
+                text: "Ойлголоо. Тэгвэл би танд дэлгэрэнгүй мэдээлэл болон видео заавар бүхий хөтөчийг мэйлээр хүргүүлчихье. Та завтай үедээ танилцаад асуух зүйл гарвал эргээд холбогдоорой. Баярлалаа.",
+                color: "#64748b",
+                isEnd: true,
+                options: []
+            },
+            'end_only_mail': {
+                step: 4,
+                text: "Мэдээж хэрэг. Би таны мэйл рүү TUSS.IO-ийн дэлгэрэнгүй танилцуулга болон видео заавруудыг одоо явуулчихлаа. Та танилцаад асуух зүйл гарвал хэзээ ч холбогдож болно. Баярлалаа, өдрийг сайхан өнгөрүүлээрэй.",
+                color: "#64748b",
+                isEnd: true,
+                options: []
+            }
+        };
+
+        let currentId = 'start';
+        let history = [];
+
+        function updateUI() {
+            const node = dialogue[currentId];
+            
+            // Animation reset
+            const container = document.getElementById('script-container');
+            container.classList.remove('fade-in');
+            void container.offsetWidth; 
+            container.classList.add('fade-in');
+
+            // Content update
+            document.getElementById('caller-text').innerText = node.text;
+            document.getElementById('status-color').style.backgroundColor = node.color;
+            document.getElementById('call-status').innerText = node.isEnd ? "Дууссан" : "Идэвхтэй";
+            document.getElementById('call-status').className = `text-sm font-black ${node.isEnd ? 'text-slate-400' : 'text-blue-600'} uppercase`;
+            document.getElementById('step-indicator').innerText = `Алхам ${node.step}`;
+            document.getElementById('back-btn').disabled = history.length === 0;
+
+            // Options update
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            if (node.options.length > 0) {
+                node.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.onclick = () => selectOption(opt.next);
+                    btn.className = "option-card group bg-white border-2 border-slate-100 p-6 rounded-[1.5rem] text-left shadow-sm hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 flex items-center justify-between";
+                    btn.innerHTML = `
+                        <span class="text-sm font-bold text-slate-700 group-hover:text-blue-600 transition-colors">${opt.label}</span>
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-blue-50 group-hover:text-blue-500 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        </div>
+                    `;
+                    optionsGrid.appendChild(btn);
+                });
+            } else if (node.isEnd) {
+                optionsGrid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-[2.5rem] uppercase tracking-[0.2em] bg-slate-50/50">
+                        Харилцаа амжилттай дууслаа
+                    </div>
+                `;
+            }
+        }
+
+        function selectOption(nextId) {
+            history.push(currentId);
+            currentId = nextId;
+            updateUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goBack() {
+            if (history.length > 0) {
+                currentId = history.pop();
+                updateUI();
+            }
+        }
+
+        function restartCall() {
+            history = [];
+            currentId = 'start';
+            updateUI();
+        }
+
+        function copyContent() {
+            const text = dialogue[currentId].text;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const toast = document.getElementById('toast');
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) scale(1)';
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) scale(0.95)';
+            }, 2500);
+        }
+
+        // Initialize
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
